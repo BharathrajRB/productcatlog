@@ -11,7 +11,6 @@ import com.example.productmanagement.service.ProductService;
 import java.util.ArrayList;
 import java.util.List;
 
-// ProductController.java
 @Controller
 public class ProductController {
   @Autowired
