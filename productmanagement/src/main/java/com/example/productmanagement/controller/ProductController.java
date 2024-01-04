@@ -42,3 +42,13 @@ public class ProductController {
     return "checkout";
   }
 }
+
+
+// @Controller
+// public class ProductController {
+// @Autowired
+// private ProductService productService;
+// @GetMapping("/")
+// public String viewHomePage(Model )
+  
+// }

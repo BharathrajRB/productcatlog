@@ -26,4 +26,14 @@ public class UserService {
             throw new UserAlreadyExistsException("User already exists");
         }
     }
+
+    public void LoginUser(User user)
+    {
+        validateUserLogin(user);
+
+    }
+    private void validateUserLogin(User user)
+    {
+        //if(userRepository.)
+    }
 }

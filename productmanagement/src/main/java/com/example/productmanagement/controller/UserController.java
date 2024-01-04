@@ -27,5 +27,16 @@ public class UserController {
             return new ResponseEntity<>("error", HttpStatus.BAD_REQUEST);
         }
     }
+    @PostMapping("/login")
+    public ResponseEntity<String> LoginUser(@RequestBody User user)
+    {
+        try{
+            userService.LoginUser(user);
+            return new ResponseEntity<>("success", HttpStatus.OK);
+        }
+        catch(Exception e){
+            return new ResponseEntity<>("error",HttpStatus.BAD_REQUEST);
+        }
+    }
 
 }
