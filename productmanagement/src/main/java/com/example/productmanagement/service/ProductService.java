@@ -1,41 +1,30 @@
+
 package com.example.productmanagement.service;
 
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
+import java.util.*;
 import com.example.productmanagement.modal.Product;
 import com.example.productmanagement.repository.ProductRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class ProductService {
   @Autowired
   private ProductRepository productRepository;
 
-  public List<Product> findAll() {
-    return productRepository.findAll();
-  }
-
-  public Optional<Product> findById(Long id) {
-    return productRepository.findById(id);
-  }
-
-  public List<Product> listAll() {
-    return productRepository.findAll();
-  }
-
-  public void save(Product product) {
+  public void createProduct(Product product) {
     productRepository.save(product);
   }
-  public Product getById(Long id) {
-    return productRepository.findById(id).get();
 
-  }
-  public void delete(Long id) {
-    productRepository.deleteById(id);
-      
-   
+  public void updateProduct(Long id, Product product) {
+    Optional<Product> existingproduct = productRepository.findById(id);
+    if (existingproduct.isPresent()) {
+      Product updateProduct = existingproduct.get();
+      updateProduct.setName(product.getName());
+      updateProduct.setDescription(product.getDescription());
+      updateProduct.setAvailableStock(10);
+      updateProduct.setPrice(1000);
+      productRepository.save(updateProduct);
+    }
   }
 }

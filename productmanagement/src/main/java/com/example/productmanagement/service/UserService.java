@@ -2,31 +2,21 @@ package com.example.productmanagement.service;
 
 import com.example.productmanagement.modal.User;
 import com.example.productmanagement.repository.UserRepository;
+
+import java.util.Base64;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 @Service
 public class UserService {
 
-    private final UserRepository userRepository;
-
     @Autowired
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
+    private UserRepository userRepository;
 
     public void registerUser(User user) {
         validateUser(user);
-        // Your registration logic here
         userRepository.save(user);
-    }
-
-    public void loginUser(String email, String password) {
-        // Your actual login logic here, for example:
-        User user = userRepository.findByEmailAndPassword(email, password);
-        if (user == null) {
-            throw new AuthenticationException("Invalid email or password");
-        }
-        // You can return the user or perform other actions based on successful login
     }
 
     private void validateUser(User user) {
@@ -34,4 +24,21 @@ public class UserService {
             throw new UserAlreadyExistsException("User already exists");
         }
     }
+
+    public boolean authenticateUser(String email, String password) {
+        User user = userRepository.findByEmailAndPassword(email, password);
+        return user != null;
+    }
+
+    public String encodeCredentials(String email, String password) {
+        String credentials = email + ":" + password;
+        String result = Base64.getEncoder().encodeToString(credentials.getBytes());
+        // System.out.println(result);
+        return result;
+    }
+
+    public User getUserByEmailAndPassword(String email, String password) {
+        return userRepository.findByEmailAndPassword(email, password);
+    }
+
 }
