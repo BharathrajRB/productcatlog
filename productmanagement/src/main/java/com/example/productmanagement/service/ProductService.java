@@ -44,4 +44,9 @@ public class ProductService {
       throw new productNotFound("product not found");
     }
   }
+
+  public List<Product> findAllProducts() {
+    List<Product> products = productRepository.findAll();
+    return products;
+  }
 }
