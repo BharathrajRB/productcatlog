@@ -2,6 +2,9 @@
 package com.example.productmanagement.service;
 
 import java.util.*;
+
+import javax.naming.NameNotFoundException;
+
 import com.example.productmanagement.modal.Product;
 import com.example.productmanagement.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +28,18 @@ public class ProductService {
       updateProduct.setAvailableStock(10);
       updateProduct.setPrice(1000);
       productRepository.save(updateProduct);
+    } else {
+      throw new productNotFound("product not found");
+
+    }
+  }
+
+  public void deleteProduct(Long id) {
+    if (productRepository.existsById(id)) {
+      productRepository.deleteById(id);
+
+    } else {
+      throw new productNotFound("product not found");
     }
   }
 }

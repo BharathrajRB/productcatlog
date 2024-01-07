@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -67,6 +68,27 @@ public class ProductController {
     } catch (Exception e) {
 
       return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+    }
+  }
+
+  @DeleteMapping("/delete/{productId}")
+  public ResponseEntity<String> deleteProduct(@RequestHeader("Authorization") String authHeader,
+      @PathVariable Long id) {
+    try {
+      String credentials = new String(Base64.getDecoder().decode(authHeader.split(" ")[1]));
+      String[] splitCredentials = credentials.split(":");
+      String email = splitCredentials[0];
+      String password = splitCredentials[1];
+      User user = userService.getUserByEmailAndPassword(email, password);
+      if (user != null && "admin".equals(user.getRole())) {
+        productService.deleteProduct(id);
+        return new ResponseEntity<>("deleted successfully", HttpStatus.OK);
+      } else {
+        return new ResponseEntity<>("you are not allowed to delete the product", HttpStatus.FORBIDDEN);
+      }
+
+    } catch (Exception e) {
+      return new ResponseEntity<>("Error during product delete", HttpStatus.BAD_REQUEST);
     }
   }
 }
