@@ -3,7 +3,7 @@ package com.example.productmanagement.controller;
 import java.util.Base64;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -81,7 +81,7 @@ public class ProductController {
       String password = splitCredentials[1];
       User user = userService.getUserByEmailAndPassword(email, password);
       if (user != null && "admin".equals(user.getRole())) {
-        productService.deleteProduct(id);
+        productService.deleteProduct(id, email);
         return new ResponseEntity<>("deleted successfully", HttpStatus.OK);
       } else {
         return new ResponseEntity<>("you are not allowed to delete the product", HttpStatus.FORBIDDEN);

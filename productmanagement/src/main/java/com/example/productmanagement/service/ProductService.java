@@ -3,8 +3,6 @@ package com.example.productmanagement.service;
 
 import java.util.*;
 
-import javax.naming.NameNotFoundException;
-
 import com.example.productmanagement.modal.Product;
 import com.example.productmanagement.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +12,7 @@ import org.springframework.stereotype.Service;
 public class ProductService {
   @Autowired
   private ProductRepository productRepository;
+  private UserService userService;
 
   public void createProduct(Product product) {
     productRepository.save(product);
@@ -34,11 +33,14 @@ public class ProductService {
     }
   }
 
-  public void deleteProduct(Long id) {
-    if (productRepository.existsById(id)) {
+  public void deleteProduct(Long id, String email) {
+    Optional<Product> exist = productRepository.findById(id);
+    if (exist.isPresent()) {
       productRepository.deleteById(id);
 
-    } else {
+    }
+
+    else {
       throw new productNotFound("product not found");
     }
   }
