@@ -40,8 +40,6 @@ public class ProductController {
       String[] splitCredentials = credentials.split(":");
       String email = splitCredentials[0];
       String password = splitCredentials[1];
-
-      // Assume "admin" is the only role allowed to create products
       if ("admin".equals(userService.getUserByEmailAndPassword(email, password).getRole())) {
         productService.createProduct(product);
         return new ResponseEntity<>("Product created successfully", HttpStatus.OK);
