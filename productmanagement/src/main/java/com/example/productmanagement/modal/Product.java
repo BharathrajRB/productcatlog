@@ -56,6 +56,6 @@ public class Product {
     this.availableStock = availableStock;
   }
 
-  // Getters and Setters
+
 
 }
