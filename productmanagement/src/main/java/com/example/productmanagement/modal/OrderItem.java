@@ -23,6 +23,7 @@ public class OrderItem {
     private String name;
     private double price;
     private Long quantity;
+    
     public Long getId() {
         return id;
     }

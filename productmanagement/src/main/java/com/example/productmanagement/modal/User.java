@@ -1,7 +1,9 @@
 package com.example.productmanagement.modal;
 
 import java.util.ArrayList;
-import java.util.List;  
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -23,6 +25,7 @@ public class User {
     private String role;
     private String password;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<CartItem> cartItems = new ArrayList<>();
     public Long getUserId() {
         return userId;

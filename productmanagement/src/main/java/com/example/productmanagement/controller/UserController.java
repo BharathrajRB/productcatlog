@@ -9,7 +9,9 @@ import com.example.productmanagement.service.ProductService;
 import com.example.productmanagement.service.UserAlreadyExistsException;
 
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -100,22 +102,27 @@ public class UserController {
         }
     }
 
-    // @GetMapping("/viewcart")
-    // public ResponseEntity<?> viewcart(@RequestHeader("Authorization") String
-    // authHeader)
-    // {
-    // try{
-    // String credentials = new String(Base64.getDecoder().decode(authHeader.split("
-    // ")[1]));
-    // String[] splitCredentials = credentials.split(":");
-    // String email = splitCredentials[0];
-    // String password = splitCredentials[1];
-    // User user =userService.getUserByemail(email);
-    // List<CartItem> cartItems=user.getCartItems();
+    @GetMapping("/viewcart")
+        public ResponseEntity<?> viewcart(@RequestHeader("Authorization") String
+        authHeader) {
+        try {
+        String credentials = new String(Base64.getDecoder().decode(authHeader.split(" ")[1]));
+        String[] splitCredentials = credentials.split(":");
+        String email = splitCredentials[0];
+        String password = splitCredentials[1];
+        User user = userService.getUserByemail(email);
+        List<CartItem> cartItems = user.getCartItems();
+        double totalPrice = cartItems.stream()
+        .mapToDouble(item -> item.getProduct().getPrice() *
+        item.getQuantity()).sum();
+        Map<String, Object> response = new HashMap<>();
+        response.put("cartItems", cartItems);
+        response.put("totalPrice", totalPrice);
+        return new ResponseEntity<>(response, HttpStatus.OK);
 
-    // }
-    // catch(Exception e){
-
-    // }
-    // }
+        } catch (Exception e) {
+        return new ResponseEntity<>("error in viewing product",
+        HttpStatus.BAD_REQUEST);
+        }
+        }
 }
