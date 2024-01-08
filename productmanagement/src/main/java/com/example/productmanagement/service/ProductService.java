@@ -5,6 +5,8 @@ import java.util.*;
 
 import com.example.productmanagement.modal.Product;
 import com.example.productmanagement.repository.ProductRepository;
+
+import org.hibernate.annotations.NotFound;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -49,4 +51,10 @@ public class ProductService {
     List<Product> products = productRepository.findAll();
     return products;
   }
-}
+
+  public Product getProductById(Long id) {
+    return productRepository.findById(id).orElseThrow(()-> new NotFoundException("product not found with the id"));
+  
+    };
+  }
+

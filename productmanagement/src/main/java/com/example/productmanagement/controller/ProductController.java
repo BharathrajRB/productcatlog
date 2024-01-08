@@ -77,8 +77,9 @@ public class ProductController {
 
   @DeleteMapping("/delete/{productId}")
   public ResponseEntity<String> deleteProduct(@RequestHeader("Authorization") String authHeader,
-      @PathVariable Long id) {
+      @PathVariable("productId") Long id) {
     try {
+      System.out.println("delete");
       String credentials = new String(Base64.getDecoder().decode(authHeader.split(" ")[1]));
       String[] splitCredentials = credentials.split(":");
       String email = splitCredentials[0];
@@ -101,4 +102,5 @@ public class ProductController {
     List<Product> products = productService.findAllProducts();
     return products;
   }
+
 }
