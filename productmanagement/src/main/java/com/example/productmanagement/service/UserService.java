@@ -16,6 +16,7 @@ public class UserService {
 
     public void registerUser(User user) {
         validateUser(user);
+       // user.setIs_active(true);
         userRepository.save(user);
     }
 
@@ -25,15 +26,15 @@ public class UserService {
         }
     }
 
-    public boolean authenticateUser(String email, String password) {
-        User user = userRepository.findByEmailAndPassword(email, password);
-        return user != null;
-    }
+    // public boolean authenticateUser(String email, String password) {
+    // User user = userRepository.findByEmailAndPassword(email, password);
+    // return user != null;
+    // }
 
     public String encodeCredentials(String email, String password) {
         String credentials = email + ":" + password;
         String result = Base64.getEncoder().encodeToString(credentials.getBytes());
-        // System.out.println(result);
+        System.out.println(result);
         return result;
     }
 
@@ -41,7 +42,7 @@ public class UserService {
         return userRepository.findByEmailAndPassword(email, password);
     }
 
-    public User getUserByemail(String email){
+    public User getUserByemail(String email) {
         return userRepository.findByEmail(email);
     }
 

@@ -1,20 +1,28 @@
 package com.example.productmanagement.modal;
 
+import java.math.BigDecimal;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
 @Entity
 public class Product {
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @GeneratedValue(strategy = GenerationType.AUTO)
   private Long id;
 
   private String name;
   private String description;
-  private double price;
+  private BigDecimal price;
   private int availableStock;
+  @ManyToOne
+  @JoinColumn(name = "id")
+  private Category Category_id;
+  
 
   public Long getId() {
     return id;
@@ -40,12 +48,12 @@ public class Product {
     this.description = description;
   }
 
-  public double getPrice() {
+  public BigDecimal getPrice() {
     return price;
   }
 
-  public void setPrice(double price) {
-    this.price = price;
+  public void setPrice(BigDecimal i) {
+    this.price = i;
   }
 
   public int getAvailableStock() {
@@ -56,6 +64,12 @@ public class Product {
     this.availableStock = availableStock;
   }
 
+  public Category getCategory_id() {
+    return Category_id;
+  }
 
+  public void setCategory_id(Category category_id) {
+    Category_id = category_id;
+  }
 
 }

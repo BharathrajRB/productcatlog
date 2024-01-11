@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.example.productmanagement.modal.Product;
 import com.example.productmanagement.modal.User;
 import com.example.productmanagement.repository.ProductRepository;
@@ -30,6 +29,7 @@ public class ProductController {
   private ProductService productService;
   @Autowired
   private UserService userService;
+  @Autowired
   private ProductRepository productRepository;
 
   @PostMapping("/create")

@@ -1,6 +1,7 @@
 package com.example.productmanagement.controller;
 
 import com.example.productmanagement.modal.CartItem;
+import com.example.productmanagement.modal.Order;
 import com.example.productmanagement.modal.Product;
 import com.example.productmanagement.modal.User;
 import com.example.productmanagement.repository.CartItemRepository;
@@ -19,7 +20,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -61,7 +61,7 @@ public class UserController {
                 String role = user.getRole();
                 String encodedCredentials = userService.encodeCredentials(email, password);
                 System.out.println("Encoded Credentials: " + encodedCredentials);
-                return new ResponseEntity<>("Login successful. Role: " + role, HttpStatus.OK);
+                return new ResponseEntity<>("Login successful.. Role: " + role, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>("Invalid credentials", HttpStatus.UNAUTHORIZED);
             }
@@ -102,27 +102,56 @@ public class UserController {
         }
     }
 
-    @GetMapping("/viewcart")
-        public ResponseEntity<?> viewcart(@RequestHeader("Authorization") String
-        authHeader) {
-        try {
-        String credentials = new String(Base64.getDecoder().decode(authHeader.split(" ")[1]));
-        String[] splitCredentials = credentials.split(":");
-        String email = splitCredentials[0];
-        String password = splitCredentials[1];
-        User user = userService.getUserByemail(email);
-        List<CartItem> cartItems = user.getCartItems();
-        double totalPrice = cartItems.stream()
-        .mapToDouble(item -> item.getProduct().getPrice() *
-        item.getQuantity()).sum();
-        Map<String, Object> response = new HashMap<>();
-        response.put("cartItems", cartItems);
-        response.put("totalPrice", totalPrice);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+    // @GetMapping("/viewcart")
+    // public ResponseEntity<?> viewcart(@RequestHeader("Authorization") String
+    // authHeader) {
+    // try {
+    // String credentials = new String(Base64.getDecoder().decode(authHeader.split("
+    // ")[1]));
+    // String[] splitCredentials = credentials.split(":");
+    // String email = splitCredentials[0];
+    // String password = splitCredentials[1];
+    // User user = userService.getUserByemail(email);
+    // List<CartItem> cartItems = user.getCartItems();
+    // double totalPrice = cartItems.stream()
+    // .mapToDouble(item -> item.getProduct().getPrice() *
+    // item.getQuantity())
+    // .sum();
+    // Map<String, Object> response = new HashMap<>();
+    // response.put("cartItems", cartItems);
+    // response.put("totalPrice", totalPrice);
+    // return new ResponseEntity<>(response, HttpStatus.OK);
 
-        } catch (Exception e) {
-        return new ResponseEntity<>("error in viewing product",
-        HttpStatus.BAD_REQUEST);
-        }
-        }
+    // } catch (Exception e) {
+    // return new ResponseEntity<>("error in viewing product",
+    // HttpStatus.BAD_REQUEST);
+    // }
+    // }
+
+    // @PostMapping("/shipping")
+    // public ResponseEntity<String> shipping(@RequestBody Order
+    // order,@RequestHeader("Authorization") String authHeader){
+    // try{
+    // String credentiasls=new String(Base64.getDecoder().decode(authHeader.split("
+    // ")[1]));
+    // String[] splitCredentials=credentiasls.split(":");
+    // String email=splitCredentials[0];
+    // String password=splitCredentials[1];
+    // User user=userService.getUserByEmailAndPassword(email,password);
+
+    // String name=userService.getName();
+    // String user_id=userService.getuserId();
+
+    // if("user".equals(userService.getUserByEmailAndPassword(email,
+    // password).getRole())){
+    // //userService.
+    // }
+
+    // }
+    // catch(Exception e) {
+
+    // }
+
+    // }
+
 }

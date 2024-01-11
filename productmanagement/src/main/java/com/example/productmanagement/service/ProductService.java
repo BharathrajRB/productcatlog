@@ -6,7 +6,6 @@ import java.util.*;
 import com.example.productmanagement.modal.Product;
 import com.example.productmanagement.repository.ProductRepository;
 
-import org.hibernate.annotations.NotFound;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,7 +27,7 @@ public class ProductService {
       updateProduct.setName(product.getName());
       updateProduct.setDescription(product.getDescription());
       updateProduct.setAvailableStock(10);
-      updateProduct.setPrice(1000);
+    //  updateProduct.setPrice(1000);
       productRepository.save(updateProduct);
     } else {
       throw new productNotFound("product not found");
@@ -54,8 +53,7 @@ public class ProductService {
   }
 
   public Product getProductById(Long id) {
-    return productRepository.findById(id).orElseThrow(()-> new NotFoundException("product not found with the id"));
-  
-    };
-  }
+    return productRepository.findById(id).orElseThrow(() -> new NotFoundException("product not found with the id"));
 
+  };
+}

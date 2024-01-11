@@ -24,6 +24,9 @@ public class User {
     private String lastName;
     private String role;
     private String password;
+    private boolean is_active;
+
+    
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<CartItem> cartItems = new ArrayList<>();
@@ -68,6 +71,12 @@ public class User {
     }
     public void setCartItems(List<CartItem> cartItems) {
         this.cartItems = cartItems;
+    }
+    public boolean isIs_active() {
+        return is_active;
+    }
+    public void setIs_active(boolean is_active) {
+        this.is_active = is_active;
     }
 
    

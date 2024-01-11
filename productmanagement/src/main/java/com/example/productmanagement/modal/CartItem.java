@@ -12,7 +12,7 @@ import jakarta.persistence.ManyToOne;
 @Entity
 public class CartItem {
     @Id
-   @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne
     @JoinColumn(name = "product_id")
@@ -46,6 +46,5 @@ public class CartItem {
     public void setUser(User user) {
         this.user = user;
     }
-
 
 }
