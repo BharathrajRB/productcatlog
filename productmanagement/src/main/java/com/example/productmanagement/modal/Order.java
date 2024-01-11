@@ -18,7 +18,6 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
-
 @Entity
 @Table(name = "orders")
 public class Order {
@@ -29,9 +28,9 @@ public class Order {
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "userId")
     private User user;
-    
+
     @OneToOne
-    @JoinColumn(name = "payment_id")
+    @JoinColumn(name = "id")
     private Payment payment;
     @CreationTimestamp
     private LocalDateTime order_date;
