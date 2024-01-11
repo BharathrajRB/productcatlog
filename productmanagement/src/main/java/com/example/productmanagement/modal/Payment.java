@@ -12,7 +12,7 @@ public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    private String paymentMethod;
+    private String name;
 
     public int getId() {
         return id;
@@ -22,12 +22,13 @@ public class Payment {
         this.id = id;
     }
 
-    public String getPaymentMethod() {
-        return paymentMethod;
+    public String getName() {
+        return name;
     }
 
-    public void setPaymentMethod(String paymentMethod) {
-        this.paymentMethod = paymentMethod;
+    public void setName(String name) {
+        this.name = name;
     }
+
 
 }
