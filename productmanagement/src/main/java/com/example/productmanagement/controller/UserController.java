@@ -8,10 +8,12 @@ import com.example.productmanagement.service.UserService;
 import com.example.productmanagement.service.ProductService;
 import com.example.productmanagement.service.UserAlreadyExistsException;
 
+import java.math.BigDecimal;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -55,10 +57,10 @@ public class UserController {
             String email = splitCredentials[0];
             String password = splitCredentials[1];
 
-            User user = userService.getUserByEmailAndPassword(email, password);
+            User user = userService.findByEmailAndPassword(email, password);
 
             if (user != null) {
-                String role = user.getRole();
+                String role = user.getRole_id().getName();
                 String encodedCredentials = userService.encodeCredentials(email, password);
                 System.out.println("Encoded Credentials: " + encodedCredentials);
                 return new ResponseEntity<>("Login successful. Role: " + role, HttpStatus.OK);
@@ -74,55 +76,78 @@ public class UserController {
     public ResponseEntity<String> addtocart(@PathVariable Long productId, @RequestParam int quantity,
             @RequestHeader("Authorization") String authHeader) {
         try {
-
             String credentials = new String(Base64.getDecoder().decode(authHeader.split(" ")[1]));
             String[] splitCredentials = credentials.split(":");
             String email = splitCredentials[0];
             String password = splitCredentials[1];
+            User user = userService.findByEmailAndPassword(email, password);
+            if (user != null) {
+                Product product = productService.getProductById(productId);
 
-            User user = userService.getUserByemail(email);
-            Product product = productService.getProductById(productId);
-            System.out.println("product id");
+                if (product != null) {
+                    if (quantity > product.getAvailableStock()) {
+                        return new ResponseEntity<>("Requested quantity exceeds available stock",
+                                HttpStatus.BAD_REQUEST);
+                    }
 
-            if (product != null) {
-                CartItem cartItem = new CartItem();
-                cartItem.setProduct(product);
-                cartItem.setQuantity(quantity);
-                cartItem.setUser(user);
-                cartItemRepository.save(cartItem);
-                return new ResponseEntity<>("product added to the cart successfully", HttpStatus.OK);
+                    Optional<CartItem> existingCartItem = cartItemRepository.findByUserAndProduct(user, product);
 
+                    if (existingCartItem.isPresent()) {
+                        CartItem cartItem = existingCartItem.get();
+                        cartItem.setQuantity(cartItem.getQuantity() + quantity);
+                        cartItemRepository.save(cartItem);
+                    } else {
+                        CartItem cartItem = new CartItem();
+                        cartItem.setProduct(product);
+                        cartItem.setQuantity(quantity);
+                        cartItem.setUser(user);
+                        cartItemRepository.save(cartItem);
+                    }
+
+                    return new ResponseEntity<>("Product added to the cart successfully", HttpStatus.OK);
+                } else {
+                    return new ResponseEntity<>("Product not found", HttpStatus.NOT_FOUND);
+                }
             } else {
-                return new ResponseEntity<>("product not found", HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>("Invalid credentials or user not found", HttpStatus.UNAUTHORIZED);
             }
 
         } catch (Exception e) {
-            return new ResponseEntity<>("error in adding product to cart", HttpStatus.BAD_REQUEST);
-
+            return new ResponseEntity<>("Error in handling", HttpStatus.BAD_REQUEST);
         }
     }
 
     @GetMapping("/viewcart")
-        public ResponseEntity<?> viewcart(@RequestHeader("Authorization") String
-        authHeader) {
-        try {
-        String credentials = new String(Base64.getDecoder().decode(authHeader.split(" ")[1]));
-        String[] splitCredentials = credentials.split(":");
-        String email = splitCredentials[0];
-        String password = splitCredentials[1];
-        User user = userService.getUserByemail(email);
-        List<CartItem> cartItems = user.getCartItems();
-        double totalPrice = cartItems.stream()
-        .mapToDouble(item -> item.getProduct().getPrice() *
-        item.getQuantity()).sum();
-        Map<String, Object> response = new HashMap<>();
-        response.put("cartItems", cartItems);
-        response.put("totalPrice", totalPrice);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+    public ResponseEntity<?> viewcart(@RequestHeader("Authorization") String authHeader) {
 
+        try {
+            String credentials = new String(Base64.getDecoder().decode(authHeader.split(" ")[1]));
+            String splitCredentials[] = credentials.split(":");
+            String email = splitCredentials[0];
+            String password = splitCredentials[1];
+            User user = userService.findByEmailAndPassword(email, password);
+            if (user != null) {
+                List<CartItem> cart = user.getCartItem();
+                if (cart.isEmpty()) {
+                    return new ResponseEntity<>("cart is empty", HttpStatus.OK);
+                }
+                BigDecimal totalprice = cart.stream()
+                        .map(item -> item.getProduct().getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+                Map<String, Object> response = new HashMap<>();
+                response.put("totalprice", totalprice);
+                response.put("cartitems ", cart);
+                return new ResponseEntity<>(response, HttpStatus.OK);
+
+            } else {
+                return new ResponseEntity<>("Invalid credentials user not found", HttpStatus.UNAUTHORIZED);
+            }
         } catch (Exception e) {
-        return new ResponseEntity<>("error in viewing product",
-        HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("error in viewing cart", HttpStatus.BAD_REQUEST);
         }
-        }
+    }
+
+    
+
 }

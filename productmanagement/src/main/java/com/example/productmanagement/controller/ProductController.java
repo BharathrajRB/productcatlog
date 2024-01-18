@@ -40,7 +40,8 @@ public class ProductController {
       String[] splitCredentials = credentials.split(":");
       String email = splitCredentials[0];
       String password = splitCredentials[1];
-      if ("admin".equals(userService.getUserByEmailAndPassword(email, password).getRole())) {
+      User user = userService.findByEmailAndPassword(email, password);
+      if (user != null && "admin".equals(user.getRole_id().getName())) {
         productService.createProduct(product);
         return new ResponseEntity<>("Product created successfully", HttpStatus.OK);
       } else {
@@ -59,8 +60,8 @@ public class ProductController {
       String[] splitCredentials = credentials.split(":");
       String email = splitCredentials[0];
       String password = splitCredentials[1];
-      User user = userService.getUserByEmailAndPassword(email, password);
-      if (user != null && "admin".equals(user.getRole())) {
+      User user = userService.findByEmailAndPassword(email, password);
+      if (user != null && "admin".equals(user.getRole_id().getName())) {
         productService.updateProduct(productId, updaProduct);
         return new ResponseEntity<String>("Products updated successfully", HttpStatus.OK);
       } else {
@@ -82,8 +83,8 @@ public class ProductController {
       String[] splitCredentials = credentials.split(":");
       String email = splitCredentials[0];
       String password = splitCredentials[1];
-      User user = userService.getUserByEmailAndPassword(email, password);
-      if (user != null && "admin".equals(user.getRole())) {
+      User user = userService.findByEmailAndPassword(email, password);
+      if (user != null && "admin".equals(user.getRole_id().getName())) {
         productService.deleteProduct(id, email);
         return new ResponseEntity<>("deleted successfully", HttpStatus.OK);
       } else {

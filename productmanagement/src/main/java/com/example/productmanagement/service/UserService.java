@@ -37,11 +37,11 @@ public class UserService {
         return result;
     }
 
-    public User getUserByEmailAndPassword(String email, String password) {
+    public User findByEmailAndPassword(String email, String password) {
         return userRepository.findByEmailAndPassword(email, password);
     }
 
-    public User getUserByemail(String email){
+    public User getUserByemail(String email) {
         return userRepository.findByEmail(email);
     }
 

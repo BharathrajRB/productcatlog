@@ -22,14 +22,18 @@ public class ProductService {
   }
 
   public void updateProduct(Long id, Product product) {
-    Optional<Product> existingproduct = productRepository.findById(id);
-    if (existingproduct.isPresent()) {
-      Product updateProduct = existingproduct.get();
+
+    Optional<Product> existupdatedProduct = productRepository.findById(id);
+    if (existupdatedProduct.isPresent()) {
+      Product updateProduct = existupdatedProduct.get();
       updateProduct.setName(product.getName());
       updateProduct.setDescription(product.getDescription());
-      updateProduct.setAvailableStock(10);
-      updateProduct.setPrice(1000);
+      updateProduct.setPrice(product.getPrice());
+      updateProduct.setActive(product.isActive());
+      updateProduct.setAvailableStock(product.getAvailableStock());
+      // updateProduct.setCategory_id(product.getCategory_id().getId());
       productRepository.save(updateProduct);
+
     } else {
       throw new productNotFound("product not found");
 
@@ -54,8 +58,7 @@ public class ProductService {
   }
 
   public Product getProductById(Long id) {
-    return productRepository.findById(id).orElseThrow(()-> new NotFoundException("product not found with the id"));
-  
-    };
-  }
+    return productRepository.findById(id).orElseThrow(() -> new NotFoundException("product not found with the id"));
 
+  };
+}
