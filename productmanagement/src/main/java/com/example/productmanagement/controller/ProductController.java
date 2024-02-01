@@ -24,15 +24,16 @@ import com.example.productmanagement.service.ProductService;
 import com.example.productmanagement.service.UserService;
 
 @RestController
-@RequestMapping("/api/product")
+
 public class ProductController {
   @Autowired
   private ProductService productService;
   @Autowired
   private UserService userService;
+  @Autowired
   private ProductRepository productRepository;
 
-  @PostMapping("/create")
+  @PostMapping("/products")
   public ResponseEntity<String> createProduct(@RequestHeader("Authorization") String authHeader,
       @RequestBody Product product) {
     try {
@@ -52,7 +53,7 @@ public class ProductController {
     }
   }
 
-  @PutMapping("/update/{productId}")
+  @PutMapping("/products/{productId}")
   public ResponseEntity<String> updateProduct(@RequestHeader("Authorization") String authHeader,
       @PathVariable Long productId, @RequestBody Product updaProduct) {
     try {
@@ -74,7 +75,7 @@ public class ProductController {
     }
   }
 
-  @DeleteMapping("/delete/{productId}")
+  @DeleteMapping("/products/{productId}")
   public ResponseEntity<String> deleteProduct(@RequestHeader("Authorization") String authHeader,
       @PathVariable("productId") Long id) {
     try {
@@ -85,7 +86,7 @@ public class ProductController {
       String password = splitCredentials[1];
       User user = userService.findByEmailAndPassword(email, password);
       if (user != null && "admin".equals(user.getRole_id().getName())) {
-        productService.deleteProduct(id, email);
+        productService.deleteProduct(id);
         return new ResponseEntity<>("deleted successfully", HttpStatus.OK);
       } else {
         return new ResponseEntity<>("you are not allowed to delete the product", HttpStatus.FORBIDDEN);
@@ -96,10 +97,15 @@ public class ProductController {
     }
   }
 
-  @GetMapping("/getProducts")
+  @GetMapping("/products")
   List<Product> getProducts() {
     List<Product> products = productService.findAllProducts();
     return products;
+  }
+
+  @GetMapping("/products/{productId}")
+  public Product getProductById(@PathVariable("productId") Long productId){
+    return productService.getProductById(productId);
   }
 
 }

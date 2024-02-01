@@ -1,19 +1,28 @@
 package com.example.productmanagement.controller;
 
+import com.example.productmanagement.Dto.OrderHistoryDTO;
 import com.example.productmanagement.modal.CartItem;
+import com.example.productmanagement.modal.OrderItem;
+import com.example.productmanagement.modal.Orders;
 import com.example.productmanagement.modal.Product;
 import com.example.productmanagement.modal.User;
 import com.example.productmanagement.repository.CartItemRepository;
+import com.example.productmanagement.repository.OrderItemRepository;
+import com.example.productmanagement.repository.OrdersRepository;
+import com.example.productmanagement.repository.PaymentMethodRepository;
+import com.example.productmanagement.repository.ProductRepository;
 import com.example.productmanagement.service.UserService;
 import com.example.productmanagement.service.ProductService;
 import com.example.productmanagement.service.UserAlreadyExistsException;
-
 import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -38,14 +47,22 @@ public class UserController {
     private ProductService productService;
     @Autowired
     private CartItemRepository cartItemRepository;
+    @Autowired
+    private PaymentMethodRepository paymentMethodRepository;
+    @Autowired
+    private OrderItemRepository orderItemRepository;
+    @Autowired
+    private OrdersRepository ordersRepository;
+    @Autowired
+    private ProductRepository productRepository;
 
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(@RequestBody User user) {
         try {
             userService.registerUser(user);
-            return new ResponseEntity<>("success", HttpStatus.OK);
+            return new ResponseEntity<>("success👍", HttpStatus.OK);
         } catch (UserAlreadyExistsException e) {
-            return new ResponseEntity<>("User already exists", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("User already exists 😞...", HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -58,93 +75,20 @@ public class UserController {
             String password = splitCredentials[1];
 
             User user = userService.findByEmailAndPassword(email, password);
+            // System.out.println("user " + user);
 
             if (user != null) {
                 String role = user.getRole_id().getName();
                 String encodedCredentials = userService.encodeCredentials(email, password);
                 System.out.println("Encoded Credentials: " + encodedCredentials);
-                return new ResponseEntity<>("Login successful. Role: " + role, HttpStatus.OK);
+                return new ResponseEntity<>(
+                        "Login successful. Role: " + role + "  encoded credentials " + encodedCredentials,
+                        HttpStatus.OK);
             } else {
-                return new ResponseEntity<>("Invalid credentials", HttpStatus.UNAUTHORIZED);
+                return new ResponseEntity<>("Register your account..", HttpStatus.UNAUTHORIZED);
             }
         } catch (Exception e) {
             return new ResponseEntity<>("Error during login", HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    @PostMapping("/addtocart/{productId}")
-    public ResponseEntity<String> addtocart(@PathVariable Long productId, @RequestParam int quantity,
-            @RequestHeader("Authorization") String authHeader) {
-        try {
-            String credentials = new String(Base64.getDecoder().decode(authHeader.split(" ")[1]));
-            String[] splitCredentials = credentials.split(":");
-            String email = splitCredentials[0];
-            String password = splitCredentials[1];
-            User user = userService.findByEmailAndPassword(email, password);
-            if (user != null) {
-                Product product = productService.getProductById(productId);
-
-                if (product != null) {
-                    if (quantity > product.getAvailableStock()) {
-                        return new ResponseEntity<>("Requested quantity exceeds available stock",
-                                HttpStatus.BAD_REQUEST);
-                    }
-
-                    Optional<CartItem> existingCartItem = cartItemRepository.findByUserAndProduct(user, product);
-
-                    if (existingCartItem.isPresent()) {
-                        CartItem cartItem = existingCartItem.get();
-                        cartItem.setQuantity(cartItem.getQuantity() + quantity);
-                        cartItemRepository.save(cartItem);
-                    } else {
-                        CartItem cartItem = new CartItem();
-                        cartItem.setProduct(product);
-                        cartItem.setQuantity(quantity);
-                        cartItem.setUser(user);
-                        cartItemRepository.save(cartItem);
-                    }
-
-                    return new ResponseEntity<>("Product added to the cart successfully", HttpStatus.OK);
-                } else {
-                    return new ResponseEntity<>("Product not found", HttpStatus.NOT_FOUND);
-                }
-            } else {
-                return new ResponseEntity<>("Invalid credentials or user not found", HttpStatus.UNAUTHORIZED);
-            }
-
-        } catch (Exception e) {
-            return new ResponseEntity<>("Error in handling", HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    @GetMapping("/viewcart")
-    public ResponseEntity<?> viewcart(@RequestHeader("Authorization") String authHeader) {
-
-        try {
-            String credentials = new String(Base64.getDecoder().decode(authHeader.split(" ")[1]));
-            String splitCredentials[] = credentials.split(":");
-            String email = splitCredentials[0];
-            String password = splitCredentials[1];
-            User user = userService.findByEmailAndPassword(email, password);
-            if (user != null) {
-                List<CartItem> cart = user.getCartItem();
-                if (cart.isEmpty()) {
-                    return new ResponseEntity<>("cart is empty", HttpStatus.OK);
-                }
-                BigDecimal totalprice = cart.stream()
-                        .map(item -> item.getProduct().getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
-                        .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-                Map<String, Object> response = new HashMap<>();
-                response.put("totalprice", totalprice);
-                response.put("cartitems ", cart);
-                return new ResponseEntity<>(response, HttpStatus.OK);
-
-            } else {
-                return new ResponseEntity<>("Invalid credentials user not found", HttpStatus.UNAUTHORIZED);
-            }
-        } catch (Exception e) {
-            return new ResponseEntity<>("error in viewing cart", HttpStatus.BAD_REQUEST);
         }
     }
 
