@@ -15,6 +15,12 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "User")
 public class User {
+
+    // @Id
+    // @GeneratedValue(generator ="sequence_user")
+    // @SequenceGenerator(name="sequence_user",sequencename="demo",initialvalue=1,allocationsize=1)
+
+    // private long id; 
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -85,6 +91,7 @@ public class User {
         this.email = email;
     }
 
+    
     public String getPassword() {
         return password;
     }
